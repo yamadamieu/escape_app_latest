@@ -1,1 +1,1 @@
-# escape_app_latest
+# 避難アプリ
