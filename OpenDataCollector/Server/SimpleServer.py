@@ -79,8 +79,9 @@ def select():
     ido = request.form.get('緯度')
     keido = request.form.get('経度')
     datalist = DataModel
-    l = []
-    N = 0.1
+    result = []
+    N = 0.01
+    limit = 10
     for v in datalist:
         top = float(ido) + N
         bottom = float(ido) - N
@@ -88,10 +89,13 @@ def select():
         left = float(keido) - N
         if top > v.latitude and bottom < v.latitude:
             if right > v.longitude and left < v.longitude:
-                l.append(v.name)
+                result.append(v.name)
+        if len(result) == limit:
+            break
+
     print(ido,keido)
-    print(len(l))
-    return 'ok'
+    print(result[0])
+    return render_template('result.html',result=result)
 
 
 
@@ -107,7 +111,6 @@ def addData():
     # 確認
     print(jsonData)
 
-    # 同日時のデータがあれば更新、無ければ新規登録
     #vはDataModelクラスのインスタンス
     v = DataModel(
                 number=jsonData["number"],
