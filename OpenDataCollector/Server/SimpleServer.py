@@ -90,7 +90,7 @@ def select():
         if top > v.latitude and bottom < v.latitude:
             if right > v.longitude and left < v.longitude:
                 result.append(v.name)
-        if len(result) == limit:
+        if len(result) == limit: #表示上限数に合わせてループ抜ける
             break
 
     print(ido,keido)
