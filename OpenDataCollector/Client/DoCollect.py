@@ -15,7 +15,7 @@ cols = ["name","adress","flood","landslide","storm_surge","earthquake","tsunami"
 
 #dfの宣言(urlのエクセルを読み込んでいる)
 df=pd.read_csv(url,          # 読込先URL
-                skipfooter=0,   # 読み飛ばすフッター行。この場合、最後2行は読み飛ばす
+                skipfooter=0,   # 読み飛ばすフッター行
                 usecols=[3,4,5,6,7,8,9,10,11,12,14,15],   # 読み込む列番号を指定
                 names = cols    # 列名の設定
                 )
@@ -25,7 +25,6 @@ print(df)
 print(len(df))
 # 1行ごと取り出しfor文　→JSON化してPOST
 for row in df.itertuples():
-  #計と県は除外
     
   jsonData = {
           "number":row[0],
