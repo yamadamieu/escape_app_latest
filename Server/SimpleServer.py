@@ -3,6 +3,7 @@ import peewee
 import json
 #位置情報所得用
 import requests
+from geopy.distance import geodesic
 
 # 初期設定
 app = Flask(__name__)
@@ -77,21 +78,32 @@ def select():
     keido = request.form.get('経度')
     datalist = DataModel
     result = []
+    now_Station = (ido, keido)
     N = 0.01
     limit = 10
-    for v in datalist:
-        top = float(ido) + N
-        bottom = float(ido) - N
-        right = float(keido) + N
-        left = float(keido) - N
-        if top > v.latitude and bottom < v.latitude:
-            if right > v.longitude and left < v.longitude:
-                result.append(v.name)
-        if len(result) == limit: #表示上限数に合わせてループ抜ける
-            break
+    while len(result) < limit:
+        for v in datalist:
+            top = float(ido) + N
+            bottom = float(ido) - N
+            right = float(keido) + N
+            left = float(keido) - N
+            if top > v.latitude and bottom < v.latitude:
+                if right > v.longitude and left < v.longitude:
+                    v_Station = (v.latitude, v.longitude)
+                    dis = geodesic(now_Station, v_Station).km
+                    append_list=[v.name,dis]   
+                    result.append(append_list)
+
+        N = N + 0.01
 
     print(ido,keido)
     print(result[0])
+    print(len(result))
+    #距離でソート
+    result = sorted(result, key=lambda x: x[1])
+
+    #10個に減らす
+    result = result[0:limit]
     return render_template('result.html',result=result)
 
 
