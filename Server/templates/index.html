@@ -36,7 +36,9 @@
 	<input type="submit">
 </form>
 
-<p><input type="button" value="位置情報の取得" onclick="geoApi()"></p>
+
+
+<p><input class="btn btn-primary" type="button" value="位置情報の取得" onclick="geoApi()"></p>
 <dl>
 	<dt>緯度</dt>
 	<dd id="resultLatitude">-</dd>
@@ -50,6 +52,7 @@
 
 
 <script>
+
 	function geoApi () {
 		// 現在位置情報を取得
 		navigator.geolocation.getCurrentPosition(successCallback);
@@ -69,6 +72,7 @@
 		
 		}
 	}
+
 </script>
 
 {% endblock %}
