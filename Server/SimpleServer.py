@@ -1,3 +1,4 @@
+from http.client import OK
 from flask import Flask,render_template,jsonify,make_response,abort,request,url_for
 import peewee
 import json
@@ -95,7 +96,9 @@ def select():
     return render_template('result.html',result=result)
 
 
-
+@app.route('/result', methods=['GET'])
+def result():
+    return "ok"
 
 
 # 登録API POSTのみ受付
@@ -159,4 +162,4 @@ def adress():
 
 # サービス起動
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000,debug=True)
+    app.run(debug=True)
