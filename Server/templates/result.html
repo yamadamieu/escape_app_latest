@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="card" style="width: 32rem;">
+	<h5 class="card-header" style="text-align:center">検索結果</h5>
+</div>
+{% for result in result %}
+	<h2>{{ result }}</h2>
+{% endfor %}
+{% endblock %}
