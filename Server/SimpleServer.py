@@ -76,12 +76,13 @@ def get_Ventilations():
 def select():
     ido = request.form.get('緯度')
     keido = request.form.get('経度')
+    now_Station = (ido, keido)
     datalist = DataModel
     result = []
-    now_Station = (ido, keido)
     N = 0.01
-    limit = 10
+    limit = 10 #探す件数
     while len(result) < limit:
+        result_in = []
         for v in datalist:
             top = float(ido) + N
             bottom = float(ido) - N
@@ -92,17 +93,15 @@ def select():
                     v_Station = (v.latitude, v.longitude)
                     dis = geodesic(now_Station, v_Station).km
                     append_list=[v.name,dis]   
-                    result.append(append_list)
+                    result_in.append(append_list)
 
         N = N + 0.01
+        result = result_in
 
-    print(ido,keido)
-    print(result[0])
-    print(len(result))
     #距離でソート
     result = sorted(result, key=lambda x: x[1])
 
-    #10個に減らす
+    #上位10個に
     result = result[0:limit]
     return render_template('result.html',result=result)
 
