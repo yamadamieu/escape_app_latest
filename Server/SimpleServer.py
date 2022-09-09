@@ -96,8 +96,13 @@ def select():
     return render_template('result.html',result=result)
 
 
-@app.route('/result', methods=['GET'])
+@app.route('/result', methods=['POST'])
 def result():
+    ido = request.form.get('ido')
+    keido = request.form.get('keido')
+    print("a")
+    print(ido,keido)
+    print("b")
     return "ok"
 
 

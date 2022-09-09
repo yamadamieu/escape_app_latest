@@ -1,6 +1,55 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<script>
+
+	if (!(navigator.geolocation)) {
+		alert("この端末では位置情報が取得できません");
+    }
+
+	// ページの読み込み完了と同時に実行されるよう指定
+	window.onload = geoApi;
+
+	function geoApi () {
+		// 現在位置情報を取得
+		navigator.geolocation.getCurrentPosition(
+			// 位置情報取得完了時の処理
+			function (position) {
+				// 緯度
+				var latitude = position.coords.latitude;
+				document.getElementById("resultLatitude").innerHTML = latitude;
+				
+				// 経度
+				var longitude = position.coords.longitude;
+				document.getElementById("resultLongitude").innerHTML = longitude;
+				
+				// 緯度・経度の精度
+				var accuracy = position.coords.accuracy;
+				document.getElementById("resultAccuracy").innerHTML = accuracy;
+			
+			},
+			// 取得失敗した場合
+			function(error) {
+			switch(error.code) {
+				case 1: //PERMISSION_DENIED
+				alert("位置情報の利用が許可されていません");
+				break;
+				case 2: //POSITION_UNAVAILABLE
+				alert("現在位置が取得できませんでした");
+				break;
+				case 3: //TIMEOUT
+				alert("タイムアウトになりました");
+				break;
+				default:
+				alert("その他のエラー(エラーコード:"+error.code+")");
+				break;
+			}
+		}
+		);
+	}
+
+</script>
+
 <div class="card" style="width: 32rem;">
 	<h5 class="card-header" style="text-align:center">緯度経度を手動入力</h5>
 	<form action="/" method="POST">
@@ -34,9 +83,9 @@
 
 
 <form action="/result" method="POST">
-	<input type="hidden" name="ido" value={{latitude}}>
-	<input type="hidden" name="keido" value={{longitude}}>
-	<input type="submit"class="btn btn-primary" value="現在地から検索">
+	<input type="hidden" name="ido" id="resultLatitude">
+	<input type="hidden" name="keido" id="resultLongitude">
+	<input type="submit"class="btn btn-primary" value="現在地から検索" onclick="geoApi()">
 </form>
 
 <dl>
