@@ -1,38 +1,7 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="card" style="width: 32rem;">
-	<h5 class="card-header" style="text-align:center">緯度経度を手動入力</h5>
-	<form action="/" method="POST">
-		<label for="緯度">緯度</label>
-		<input type="number" name="緯度">
-		<label for="経度">経度</label>
-		<input type="number" name="経度">
-		<input type="submit">
-	</form>
-</div>
-
-<div class="card" style="width: 32rem;">
-	<h5 class="card-header" style="text-align:center">現在位置を自動入力</h5>
-	<a href="/adress" class="btn btn-primary" role="button">位置情報を再取得</a>
-</div>
-
-<div class="card" style="width: 32rem;">
-	<h5 class="card-header" style="text-align:center">現在保持されている位置情報</h5>
-	<li>緯度は{{ido}}</li>
-	<li>経度は{{keido}}</li>
-
-</div>
-
-<!-- <a href="/select" class="btn btn-primary" role="button">絞り込み</a> -->
-
-<!-- <a href="{{ url_for('select', ido=34, keido=136 )}}" class="btn btn-primary" role="button">絞り込み2</a> -->
-
-<form action="/select" method="POST">
-	<label for="緯度">緯度</label>
-	<input type="number" name="緯度" value={{ido}}>
-	<label for="経度">経度</label>
-	<input type="number" name="経度" value={{keido}}>
+<form action="/result" method="POST">
 	<div class="form-check">
 		<input class="form-check-input" type="checkbox" value="0" id="flexCheckDefault" name="a">
 		<label class="form-check-label" for="flexCheckDefault">
@@ -40,7 +9,7 @@
 		</label>
 	</div>
 	<div class="form-check">
-		<input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="b" checked>
+		<input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="b">
 		<label class="form-check-label" for="flexCheckChecked">
 			崖崩れ、土石流及び地滑り
 		</label>
@@ -50,7 +19,6 @@
 		<label class="form-check-label" for="flexCheckDefault">
 			高潮
 		</label>
-	</div>
 	</div>
 	<div class="form-check">
 		<input class="form-check-input" type="checkbox" value="3" id="flexCheckChecked" name="d">
@@ -82,23 +50,11 @@
 			火山現象
 		</label>
 	</div>
-	<input type="submit">
+
+	<input type="hidden" name="latitude" id="resultLatitude" value="">
+	<input type="hidden" name="longitude" id="resultLongitude" value="">
+	<input type="submit" class="btn btn-primary btn-lg" value="現在地から検索">
 </form>
-
-
-
-<p><input class="btn btn-primary" type="button" value="位置情報の取得" onclick="geoApi()"></p>
-<dl>
-	<dt>緯度</dt>
-	<dd id="resultLatitude">-</dd>
-
-	<dt>経度</dt>
-	<dd id="resultLongitude">-</dd>
-
-	<dt>緯度・経度の精度</dt>
-	<dd id="resultAccuracy">-</dd>
-</dl>
-
 
 <script>
 
@@ -106,23 +62,26 @@
 		alert("この端末では位置情報が取得できません");
 	}
 
-	function geoApi() {
+	// ページの読み込み完了と同時に実行されるよう指定
+	window.onload = geoApi;
+
+	function geoApi () {
 		// 現在位置情報を取得
 		navigator.geolocation.getCurrentPosition(
 			// 位置情報取得完了時の処理
 			function (position) {
 				// 緯度
-				var gllatitude = position.coords.latitude;
-				document.getElementById("resultLatitude").innerHTML = gllatitude;
-
+				var latitude = position.coords.latitude;
+				document.getElementById("resultLatitude").value = latitude;
+				
 				// 経度
-				var gllongitude = position.coords.longitude;
-				document.getElementById("resultLongitude").innerHTML = gllongitude;
-
+				var longitude = position.coords.longitude;
+				document.getElementById("resultLongitude").value = longitude;
+				
 				// 緯度・経度の精度
-				var glaccuracy = position.coords.accuracy;
-				document.getElementById("resultAccuracy").innerHTML = glaccuracy;
-
+				var accuracy = position.coords.accuracy;
+				document.getElementById("resultAccuracy").value = accuracy;
+			
 			},
 			// 取得失敗した場合
 			function (error) {

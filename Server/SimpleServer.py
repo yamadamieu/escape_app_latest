@@ -1,4 +1,4 @@
-from cmath import isnan
+from http.client import OK
 from flask import Flask,render_template,jsonify,make_response,abort,request,url_for
 import peewee
 import json
@@ -59,26 +59,17 @@ def disaster_select(datalist,num):
         datalist = datalist.select().where(DataModel.volcano == 1)
     return datalist
 
-
-
-
-
-#現在位置を所得する関数
-def get_locate():
-    geo_request_url = 'https://get.geojs.io/v1/ip/geo.json'
-    geo_data = requests.get(geo_request_url).json()
-    ido = geo_data['latitude']
-    keido = geo_data['longitude']
-    return ido,keido
-
-
-#避難所の絞り込み
-@app.route('/select',methods=['POST'])
-def select():
-    ido = request.form.get('緯度')
-    keido = request.form.get('経度')
+#避難所検索結果
+@app.route('/result',methods=['POST'])
+def result():
+    ido = request.form.get('latitude')
+    keido = request.form.get('longitude')
     now_Station = (ido, keido)
+
+    print (now_Station)
+
     dis_list = []
+
     #　災害の指定されたものをリストに保存：後で関数にする
     if request.form.get('a') != None:
         dis_list.append(int(request.form.get('a')))
@@ -104,9 +95,11 @@ def select():
     for _ in range(len(dis_list)):
         d = dis_list.pop()
         datalist = disaster_select(datalist,d)
+    
     result = []
     N = 0.01
     limit = 10 #探す件数
+
     while len(result) < limit:
         result_in = []
         for v in datalist:
@@ -117,7 +110,7 @@ def select():
             if top > v.latitude and bottom < v.latitude:
                 if right > v.longitude and left < v.longitude:
                     v_Station = (v.latitude, v.longitude)
-                    dis = geodesic(now_Station, v_Station).km
+                    dis = format(geodesic(now_Station, v_Station).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
                     append_list=[v.name,dis]   
                     result_in.append(append_list)
 
@@ -130,7 +123,6 @@ def select():
     #上位10個に
     result = result[0:limit]
     return render_template('result.html',result=result)
-
 
 # 登録API POSTのみ受付
 @app.route('/addData/', methods=['POST'])
@@ -168,27 +160,12 @@ def addData():
 #####################################################################
 # ページ遷移
 # 初期ページ
-@app.route('/',methods=['GET','POST'])
+@app.route('/')
 def index():
-    #経度と緯度を保持
-    if request.method == 'POST':
-        ido = request.form.get('緯度')
-        keido = request.form.get('経度')
-    #GETなら緯度経度を自動所得
-    else:
-        ido,keido = get_locate()
     # トップページを表示
-    return render_template('index.html',ido=ido,keido=keido)
+    return render_template('index.html')
 
 ####################################################################
-#位置情報を自動で取得
-@app.route('/adress')
-def adress():
-    ido,keido = get_locate()
-    # トップページを表示
-    return render_template('index.html',ido=ido,keido=keido)
-
-
 
 # サービス起動
 if __name__ == '__main__':
