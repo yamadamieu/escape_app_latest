@@ -1,35 +1,7 @@
 {% extends 'base.html' %}
 
 {% block body %}
-
-<div class="card" style="width: 32rem;">
-	<h5 class="card-header" style="text-align:center">緯度経度を手動入力</h5>
-	<form action="/" method="POST">
-		<label for="緯度">緯度</label>
-		<input type="number" name="緯度">
-		<label for="経度">経度</label>
-		<input type="number" name="経度">
-		<input type="submit">
-	</form>
-</div>
-
-<div class="card" style="width: 32rem;">
-	<h5 class="card-header" style="text-align:center">現在位置を自動入力</h5>
-	<a href="/adress" class="btn btn-primary" role="button">位置情報を再取得</a>
-</div>
-
-<div class="card" style="width: 32rem;">
-	<h5 class="card-header" style="text-align:center">現在保持されている位置情報</h5>
-	<li>緯度は{{ido}}</li>
-	<li>経度は{{keido}}</li>
-
-</div>
-
 <form action="/result" method="POST">
-	<label for="緯度">緯度</label>
-	<input type="number" name="緯度" value={{ido}}>
-	<label for="経度">経度</label>
-	<input type="number" name="経度" value={{keido}}>
 	<div class="form-check">
 		<input class="form-check-input" type="checkbox" value="0" id="flexCheckDefault" name="a">
 		<label class="form-check-label" for="flexCheckDefault">
@@ -37,7 +9,7 @@
 		</label>
 	</div>
 	<div class="form-check">
-		<input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="b" checked>
+		<input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="b">
 		<label class="form-check-label" for="flexCheckChecked">
 			崖崩れ、土石流及び地滑り
 		</label>
@@ -47,7 +19,6 @@
 		<label class="form-check-label" for="flexCheckDefault">
 			高潮
 		</label>
-	</div>
 	</div>
 	<div class="form-check">
 		<input class="form-check-input" type="checkbox" value="3" id="flexCheckChecked" name="d">
