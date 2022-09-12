@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<form action="/result" method="POST">
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="0" id="flexCheckDefault" name="a">
+		<label class="form-check-label" for="flexCheckDefault">
+			洪水
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="1" id="flexCheckChecked" name="b">
+		<label class="form-check-label" for="flexCheckChecked">
+			崖崩れ、土石流及び地滑り
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="2" id="flexCheckDefault" name="c">
+		<label class="form-check-label" for="flexCheckDefault">
+			高潮
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="3" id="flexCheckChecked" name="d">
+		<label class="form-check-label" for="flexCheckChecked">
+			地震
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="4" id="flexCheckDefault" name="e">
+		<label class="form-check-label" for="flexCheckDefault">
+			津波
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="5" id="flexCheckDefault" name="f">
+		<label class="form-check-label" for="flexCheckDefault">
+			大規模な火事
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="6" id="flexCheckDefault" name="g">
+		<label class="form-check-label" for="flexCheckDefault">
+			内水氾濫
+		</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" value="7" id="flexCheckDefault" name="h">
+		<label class="form-check-label" for="flexCheckDefault">
+			火山現象
+		</label>
+	</div>
+
+	<input type="hidden" name="latitude" id="resultLatitude" value="">
+	<input type="hidden" name="longitude" id="resultLongitude" value="">
+	<input type="submit" class="btn btn-primary btn-lg" value="現在地から検索">
+</form>
+
+<script>
+
+	if (!(navigator.geolocation)) {
+		alert("この端末では位置情報が取得できません");
+	}
+
+	// ページの読み込み完了と同時に実行されるよう指定
+	window.onload = geoApi;
+
+	function geoApi () {
+		// 現在位置情報を取得
+		navigator.geolocation.getCurrentPosition(
+			// 位置情報取得完了時の処理
+			function (position) {
+				// 緯度
+				var latitude = position.coords.latitude;
+				document.getElementById("resultLatitude").value = latitude;
+				
+				// 経度
+				var longitude = position.coords.longitude;
+				document.getElementById("resultLongitude").value = longitude;
+				
+				// 緯度・経度の精度
+				var accuracy = position.coords.accuracy;
+				document.getElementById("resultAccuracy").value = accuracy;
+			
+			},
+			// 取得失敗した場合
+			function (error) {
+				switch (error.code) {
+					case 1: //PERMISSION_DENIED
+						alert("位置情報の利用が許可されていません");
+						break;
+					case 2: //POSITION_UNAVAILABLE
+						alert("現在位置が取得できませんでした");
+						break;
+					case 3: //TIMEOUT
+						alert("タイムアウトになりました");
+						break;
+					default:
+						alert("その他のエラー(エラーコード:" + error.code + ")");
+						break;
+				}
+			}
+		);
+	}
+
+</script>
+
+{% endblock %}
