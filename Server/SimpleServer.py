@@ -72,10 +72,10 @@ def get_Ventilations():
     return make_response(jsonify(result))
 
 #避難所の絞り込み
-@app.route('/select',methods=['POST'])
+@app.route('/result',methods=['POST'])
 def select():
-    ido = request.form.get('緯度')
-    keido = request.form.get('経度')
+    ido = request.form.get('latitude')
+    keido = request.form.get('longitude')
     datalist = DataModel
     result = []
     N = 0.01
@@ -94,17 +94,6 @@ def select():
     print(ido,keido)
     print(result[0])
     return render_template('result.html',result=result)
-
-
-@app.route('/result', methods=['POST'])
-def result():
-    ido = request.form.get('ido')
-    keido = request.form.get('keido')
-    print("a")
-    print(ido,keido)
-    print("b")
-    return "ok"
-
 
 # 登録API POSTのみ受付
 @app.route('/addData/', methods=['POST'])
