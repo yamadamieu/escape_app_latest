@@ -62,11 +62,9 @@ def disaster_select(datalist,num):
 #避難所検索結果
 @app.route('/result',methods=['POST'])
 def result():
-    ido = request.form.get('latitude')
-    keido = request.form.get('longitude')
-    now_Station = (ido, keido)
-
-    print (now_Station)
+    lat = request.form.get('latitude')
+    lng = request.form.get('longitude')
+    now_position = [lat, lng]
 
     dis_list = []
 
@@ -103,14 +101,14 @@ def result():
     while len(result) < limit:
         result_in = []
         for v in datalist:
-            top = float(ido) + N
-            bottom = float(ido) - N
-            right = float(keido) + N
-            left = float(keido) - N
+            top = float(lat) + N
+            bottom = float(lat) - N
+            right = float(lng) + N
+            left = float(lng) - N
             if top > v.latitude and bottom < v.latitude:
                 if right > v.longitude and left < v.longitude:
-                    v_Station = (v.latitude, v.longitude)
-                    dis = format(geodesic(now_Station, v_Station).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
+                    v_position = [v.latitude, v.longitude]
+                    dis = format(geodesic(now_position, v_position).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
                     append_list=[v.name,dis]   
                     result_in.append(append_list)
 
@@ -122,7 +120,7 @@ def result():
 
     #上位10個に
     result = result[0:limit]
-    return render_template('result.html',result=result)
+    return render_template('result.html',result=result,now_position=now_position)
 
 # 登録API POSTのみ受付
 @app.route('/addData/', methods=['POST'])

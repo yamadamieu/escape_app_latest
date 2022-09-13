@@ -7,4 +7,17 @@
 {% for result in result %}
 <h2>{{ result[0] }}：{{ result[1] }}km</h2>
 {% endfor %}
+
+<div id="map" style="height:400px; width:600px;"></div><!-- 地図を表示する div 要素（id="map"）-->
+<script>
+	var pos = {{ now_position|tojson }};
+function initMap() {
+	var latlng = new google.maps.LatLng( pos[0] , pos[1] ) ;
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: latlng,
+      zoom: 14
+    });
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzZJIejErn0JNCZ3o_clYK8swjdFn3gpc&callback=initMap" async defer></script>
 {% endblock %}
