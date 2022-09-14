@@ -1,5 +1,6 @@
 from ast import Break
 from http.client import OK
+from re import search
 from flask import Flask,render_template,jsonify,make_response,abort,request,url_for
 import peewee
 import json
@@ -89,6 +90,7 @@ def result():
     lng = request.form.get('longitude')
     now_position = [lat, lng]
     direction = request.form.get('direction')
+    distance = request.form.get('distance')
     print(direction)
 
     dis_list = []
@@ -119,46 +121,49 @@ def result():
         d = dis_list.pop()
         datalist = disaster_select(datalist,d)
     
-    result = []
+    search = []
     N = 0.01
     limit = 10 #探す件数
-
-    while len(result) < limit:
-        result_in = []
-        top,bottom,right,left = range_decide(ido,keido,N,direction)
+    while len(search) < limit:
+        search_in = []
+        top,bottom,right,left = range_decide(lat,lng,N,direction)
         for v in datalist:
-            # top = float(lat) + N
-            # bottom = float(lat) - N
-            # right = float(lng) + N
-            # left = float(lng) - N
-            # top,bottom,right,left = range_decide(lat,lng,N,direction)
             if top > v.latitude and bottom < v.latitude:
                 if right > v.longitude and left < v.longitude:
-                    v_position = [v.latitude, v.longitude]
+                    v_position = (v.latitude, v.longitude)
                     dis = format(geodesic(now_position, v_position).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
-                    append_list=[v.name,dis]   
-                    result_in.append(append_list)
+                    append_list=[v.name,dis,v.latitude,v.longitude]
+                    search_in.append(append_list)
         print(N)
         print(top)
         print(bottom)
         print(right)
         print(left)
         N = N + 0.01
-        result = result_in
-        print(len(result))
+        search = search_in
         if N > MAX_DIS:
             break
 
+    print("len"+str(len(search)))
 
-    if len(result) >= 1:
+    if len(search) >= 1:
         #距離でソート
-        result = sorted(result, key=lambda x: x[1])
+        search = sorted(search, key=lambda x: x[1])
     else:
-        result.append(["見つかりませんでした",0])
+        search.append(["見つかりませんでした",0])
 
-    #上位10個に
-    result = result[0:limit]
+    #距離によって上位10個に絞り込む
+    temp = search[0:limit]
+    result = []
+    for i in temp:
+        if i[1] < distance:
+            result.append(i)
+    if len(result) == 0:
+        result.append(["範囲内にはありません",distance])
+    print(temp)
+    print(result)
     return render_template('result.html',result=result,now_position=now_position)
+
 
 # 登録API POSTのみ受付
 @app.route('/addData/', methods=['POST'])

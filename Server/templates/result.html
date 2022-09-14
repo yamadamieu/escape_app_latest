@@ -10,19 +10,56 @@
 
 <div id="map" style="height:400px; width:600px;"></div><!-- 地図を表示する div 要素（id="map"）-->
 <!--現在地を中心とした地図の描画-->
-<script>
-	var pos = {{ now_position|tojson }};
+<script type="text/javascript">
+let marker = [];
+let infoWindow = [];
+let currentInfoWindow = null;
 function initMap() {
-	var latlng = new google.maps.LatLng( pos[0] , pos[1] ) ;
+	let pos = {{ now_position|tojson }};
+	let makerdata = {{ result|tojson }};
+	let latlng = new google.maps.LatLng( pos[0] , pos[1] );
+	//現在地の指定
     map = new google.maps.Map(document.getElementById('map'), {
       center: latlng,
       zoom: 13.2
     });
-	var marker = new google.maps.Marker({
-			position: latlng, //マーカーの位置（必須）
-			map: map //マーカーを表示する地図
+	
+	//現在地にマーカーを立てる
+	const main_marker = new google.maps.Marker({
+			position: latlng, 
+			map: map 
 		});
+
+	//検索結果の避難所にマーカーを立てる
+	for(var i = 0; i < makerdata.length; i++){
+		const image = "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
+		let marker_latlng = new google.maps.LatLng( makerdata[i][2] , makerdata[i][3] );
+
+		marker[i] = new google.maps.Marker({
+			position: marker_latlng,
+      		map: map,
+      		icon: image,
+    	});
+	
+	// 吹き出しの追加
+    infoWindow[i] = new google.maps.InfoWindow({
+    content: makerdata[i][0]
+    });
+
+    markerEvent(i); 
+}
+
+// マーカークリック時に吹き出しを表示する
+function markerEvent(i) {
+    marker[i].addListener('click', function() {
+		if (currentInfoWindow) {
+			currentInfoWindow.close();
+		}
+      infoWindow[i].open(map, marker[i]);
+	  currentInfoWindow = infoWindow[i];
+    });
   }
+}
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzZJIejErn0JNCZ3o_clYK8swjdFn3gpc&callback=initMap" async defer></script>
 {% endblock %}
