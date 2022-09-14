@@ -1,9 +1,9 @@
+from ast import Break
 from http.client import OK
 from flask import Flask,render_template,jsonify,make_response,abort,request,url_for
 import peewee
 import json
 #位置情報所得用
-import requests
 from geopy.distance import geodesic
 
 # 初期設定
@@ -39,6 +39,29 @@ db.create_tables([DataModel])
 #災害のリスト
 disaster_list = ["flood","landslide","storm_surge","earthquake","tsunami","fire","inland_flood","volcano"]
 
+#　日本の経度緯度の範囲の最大直径
+MAX_DIS = 32
+
+def range_decide(lat,lng,N,direction):
+    if int(direction) in [0,1,3,4,5,6]:
+        top = float(lat) + N
+    else:
+        top = float(lat)
+    if int(direction) in [0,2,3,4,7,8]:
+        bottom = float(lat) - N
+    else:
+        bottom = float(lat) 
+    if int(direction) in [0,1,2,3,6,8]:
+        right = float(lng) + N
+    else:
+        right = float(lng)
+    if int(direction) in [0,1,2,4,5,7]:
+        left = float(lng) - N
+    else:
+        left = float(lng)
+    print("範囲関数")
+    return top,bottom,right,left
+
 #災害を指定して格納する関数
 def disaster_select(datalist,num):
     if num == 0:
@@ -65,6 +88,8 @@ def result():
     lat = request.form.get('latitude')
     lng = request.form.get('longitude')
     now_position = [lat, lng]
+    direction = request.form.get('direction')
+    print(direction)
 
     dis_list = []
 
@@ -100,23 +125,36 @@ def result():
 
     while len(result) < limit:
         result_in = []
+        top,bottom,right,left = range_decide(ido,keido,N,direction)
         for v in datalist:
-            top = float(lat) + N
-            bottom = float(lat) - N
-            right = float(lng) + N
-            left = float(lng) - N
+            # top = float(lat) + N
+            # bottom = float(lat) - N
+            # right = float(lng) + N
+            # left = float(lng) - N
+            # top,bottom,right,left = range_decide(lat,lng,N,direction)
             if top > v.latitude and bottom < v.latitude:
                 if right > v.longitude and left < v.longitude:
                     v_position = [v.latitude, v.longitude]
                     dis = format(geodesic(now_position, v_position).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
                     append_list=[v.name,dis]   
                     result_in.append(append_list)
-
+        print(N)
+        print(top)
+        print(bottom)
+        print(right)
+        print(left)
         N = N + 0.01
         result = result_in
+        print(len(result))
+        if N > MAX_DIS:
+            break
 
-    #距離でソート
-    result = sorted(result, key=lambda x: x[1])
+
+    if len(result) >= 1:
+        #距離でソート
+        result = sorted(result, key=lambda x: x[1])
+    else:
+        result.append(["見つかりませんでした",0])
 
     #上位10個に
     result = result[0:limit]

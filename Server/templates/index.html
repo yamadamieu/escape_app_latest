@@ -50,7 +50,17 @@
 			火山現象
 		</label>
 	</div>
-
+	<select name="direction">
+		<option value="0">方角を指定しない</option>
+		<option value="1">ここより北</option>
+		<option value="2">ここより南</option>
+		<option value="3">ここより東</option>
+		<option value="4">ここより西</option>
+		<option value="5">ここより北西</option>
+		<option value="6">ここより北東</option>
+		<option value="7">ここより南西</option>
+		<option value="8">ここより南東</option><!-- CHECK -->
+	</select>
 	<input type="hidden" name="latitude" id="resultLatitude" value="">
 	<input type="hidden" name="longitude" id="resultLongitude" value="">
 	<input type="submit" class="btn btn-primary btn-lg" value="現在地から検索">
@@ -65,7 +75,7 @@
 	// ページの読み込み完了と同時に実行されるよう指定
 	window.onload = geoApi;
 
-	function geoApi () {
+	function geoApi() {
 		// 現在位置情報を取得
 		navigator.geolocation.getCurrentPosition(
 			// 位置情報取得完了時の処理
@@ -73,7 +83,7 @@
 				// 緯度
 				var latitude = position.coords.latitude;
 				document.getElementById("resultLatitude").value = latitude;
-				
+
 				// 経度
 				var longitude = position.coords.longitude;
 				document.getElementById("resultLongitude").value = longitude;
