@@ -54,6 +54,7 @@ function initMap() {
 }
 
 // マーカークリック時に吹き出しを表示する
+//既にウィンドウが開いていたらそれを閉じる
 function markerEvent(i) {
     marker[i].addListener('click', function() {
 		if (currentInfoWindow) {
@@ -63,6 +64,7 @@ function markerEvent(i) {
 	  currentInfoWindow = infoWindow[i];
     });
   }
+//マーカーと現在地が全て描画されるように調整
 map.fitBounds(bounds);
 bounds.extend(main_marker.position);
 }

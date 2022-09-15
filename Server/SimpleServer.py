@@ -134,11 +134,7 @@ def result():
                     dis = format(geodesic(now_position, v_position).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
                     append_list=[v.name,dis,v.latitude,v.longitude]
                     search_in.append(append_list)
-        print(N)
-        print(top)
-        print(bottom)
-        print(right)
-        print(left)
+                    
         N = N + 0.01
         search = list(map(list, set(map(tuple, search_in)))) #
         if N > MAX_DIS:
