@@ -130,7 +130,7 @@ def result():
         for v in datalist:
             if top > v.latitude and bottom < v.latitude:
                 if right > v.longitude and left < v.longitude:
-                    v_position = (v.latitude, v.longitude)
+                    v_position = [v.latitude, v.longitude]
                     dis = format(geodesic(now_position, v_position).km,'.2f') #現在地と避難所の距離を小数点以下2桁で計算
                     append_list=[v.name,dis,v.latitude,v.longitude]
                     search_in.append(append_list)
@@ -140,7 +140,7 @@ def result():
         print(right)
         print(left)
         N = N + 0.01
-        search = search_in
+        search = list(map(list, set(map(tuple, search_in)))) #
         if N > MAX_DIS:
             break
 
@@ -156,11 +156,10 @@ def result():
     temp = search[0:limit]
     result = []
     for i in temp:
-        if i[1] < distance:
+        if float(i[1]) < float(distance):
             result.append(i)
     if len(result) == 0:
         result.append(["範囲内にはありません",distance])
-    print(temp)
     print(result)
     return render_template('result.html',result=result,now_position=now_position)
 
